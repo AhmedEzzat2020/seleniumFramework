@@ -27,7 +27,7 @@ import utilities.Helper;
 public class TestBase 
 {
 	public static WebDriver driver ; 
-	
+
 	public static String downloadPath = System.getProperty("user.dir") + "\\Downloads";
 
 	public static FirefoxOptions firefoxOption() {
@@ -78,7 +78,16 @@ public class TestBase
 			String [] phantomjsArgs = {"--web-security=no","--ignore-ssl-errors=yes"};
 			caps.setCapability(PhantomJSDriverService.PHANTOMJS_CLI_ARGS, phantomjsArgs);
 			driver = new PhantomJSDriver(caps);
-			
+
+		}
+		else if (browserName.equalsIgnoreCase("chrome-headless"))
+		{
+			System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir")+"/drivers/chromedriver.exe");
+			ChromeOptions options = new ChromeOptions();
+			options.addArguments("--headless");
+			options.addArguments("--windows-size=1920,1080");
+			driver = new ChromeDriver(options);
+
 		}
 		else if (browserName.equalsIgnoreCase("safari")) {
 			driver = new SafariDriver(); 
