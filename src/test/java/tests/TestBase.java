@@ -1,5 +1,6 @@
 package tests;
 
+import java.lang.ref.PhantomReference;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -9,7 +10,10 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.phantomjs.PhantomJSDriver;
+import org.openqa.selenium.phantomjs.PhantomJSDriverService;
 import org.openqa.selenium.remote.CapabilityType;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.safari.SafariDriver;
 import org.testng.ITestResult;
 import org.testng.annotations.AfterMethod;
@@ -48,7 +52,7 @@ public class TestBase
 
 	@BeforeSuite
 	@Parameters({"browser"})
-	public void startDriver(@Optional("chrome") String browserName) 
+	public void startDriver(@Optional("chrome") String browserName) throws InterruptedException 
 	{
 		if (browserName.equalsIgnoreCase("chrome")) {
 			System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir")+"/drivers/chromedriver.exe");
@@ -65,7 +69,17 @@ public class TestBase
 			System.setProperty("webdriver.ie.driver", System.getProperty("user.dir")+"/drivers/IEDriverServer.exe");
 			driver = new InternetExplorerDriver(); 
 		}
-
+		else if (browserName.equalsIgnoreCase("HeadlessBrowser"))
+		{
+			DesiredCapabilities caps = new DesiredCapabilities();
+			caps.setJavascriptEnabled(true);
+			caps.setCapability(PhantomJSDriverService.PHANTOMJS_EXECUTABLE_PATH_PROPERTY,
+					System.getProperty("user.dir")+"/drivers/phantomjs.exe");
+			String [] phantomjsArgs = {"--web-security=no","--ignore-ssl-errors=yes"};
+			caps.setCapability(PhantomJSDriverService.PHANTOMJS_CLI_ARGS, phantomjsArgs);
+			driver = new PhantomJSDriver(caps);
+			
+		}
 		else if (browserName.equalsIgnoreCase("safari")) {
 			driver = new SafariDriver(); 
 		}
